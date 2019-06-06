@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -60,6 +62,8 @@ class _HomePageState extends State<HomePage> {
     grid = blankGrid();
     gridNew = blankGrid();
     super.initState();
+    addNumber(grid, gridNew);
+    addNumber(grid, gridNew);
   }
 
   @override
@@ -149,6 +153,15 @@ class _HomePageState extends State<HomePage> {
                             Icons.refresh,
                             color: Colors.white,
                           ),
+                          onPressed: () {
+                            setState(() {
+                              grid = blankGrid();
+                              gridNew = blankGrid();
+                              grid = addNumber(grid, gridNew);
+                              grid = addNumber(grid, gridNew);
+                              score = 0;
+                            });
+                          },
                         ),
                       ),
                     ),
@@ -228,4 +241,30 @@ List<List<int>> blankGrid() {
     rows.add([0, 0, 0, 0]);
   }
   return rows;
+}
+
+class Point {
+  int x;
+  int y;
+
+  Point(this.x, this.y);
+}
+
+List<List<int>> addNumber(List<List<int>> grid, List<List<int>> gridNew) {
+  List<Point> options = [];
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      if (grid[i][j] == 0) {
+        options.add(Point(i, j));
+      }
+    }
+  }
+  if (options.length > 0) {
+    int spotRandomIndex = new Random().nextInt(options.length);
+    Point spot = options[spotRandomIndex];
+    int r = new Random().nextInt(100);
+    grid[spot.x][spot.y] = r > 50 ? 4 : 2;
+    gridNew[spot.x][spot.y] = 1;
+  }
+  return grid;
 }
