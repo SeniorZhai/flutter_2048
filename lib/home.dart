@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import './game.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -57,10 +58,25 @@ class _HomePageState extends State<HomePage> {
     return grids;
   }
 
+  void handleGesture(int direction) {
+    /*
+     * 0↑ 1↓ 2← 3→
+     *   
+    **/
+
+    setState(() {
+      var newGrid = go(grid, direction);
+      this.grid = newGrid;
+      print(grid);
+    });
+
+    addNumber(grid, gridNew);
+  }
+
   @override
   void initState() {
-    grid = blankGrid();
-    gridNew = blankGrid();
+    grid = blankMatrix();
+    gridNew = blankMatrix();
     super.initState();
     addNumber(grid, gridNew);
     addNumber(grid, gridNew);
@@ -133,6 +149,20 @@ class _HomePageState extends State<HomePage> {
                       crossAxisCount: 4,
                       children: getGrid(gridWidth, gridHeight),
                     ),
+                    onVerticalDragEnd: (e) {
+                      if (e.primaryVelocity < 0) {
+                        handleGesture(0);
+                      } else {
+                        handleGesture(1);
+                      }
+                    },
+                    onHorizontalDragEnd: (e) {
+                      if (e.primaryVelocity < 0) {
+                        handleGesture(2);
+                      } else {
+                        handleGesture(3);
+                      }
+                    },
                   ),
                 ),
               ),
@@ -155,8 +185,8 @@ class _HomePageState extends State<HomePage> {
                           ),
                           onPressed: () {
                             setState(() {
-                              grid = blankGrid();
-                              gridNew = blankGrid();
+                              grid = blankMatrix();
+                              gridNew = blankMatrix();
                               grid = addNumber(grid, gridNew);
                               grid = addNumber(grid, gridNew);
                               score = 0;
@@ -233,38 +263,4 @@ class _TileState extends State<Tile> {
           borderRadius: BorderRadius.all(Radius.circular(10.0))),
     );
   }
-}
-
-List<List<int>> blankGrid() {
-  List<List<int>> rows = [];
-  for (int i = 0; i < 4; i++) {
-    rows.add([0, 0, 0, 0]);
-  }
-  return rows;
-}
-
-class Point {
-  int x;
-  int y;
-
-  Point(this.x, this.y);
-}
-
-List<List<int>> addNumber(List<List<int>> grid, List<List<int>> gridNew) {
-  List<Point> options = [];
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 4; j++) {
-      if (grid[i][j] == 0) {
-        options.add(Point(i, j));
-      }
-    }
-  }
-  if (options.length > 0) {
-    int spotRandomIndex = new Random().nextInt(options.length);
-    Point spot = options[spotRandomIndex];
-    int r = new Random().nextInt(100);
-    grid[spot.x][spot.y] = r > 50 ? 4 : 2;
-    gridNew[spot.x][spot.y] = 1;
-  }
-  return grid;
 }
